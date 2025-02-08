@@ -2,6 +2,7 @@
 # the open-source pygame library
 # throughout this file
 import pygame
+import sys
 from constants import *
 from player import *
 from asteroid import *
@@ -31,6 +32,10 @@ def main():
     player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
     a_fields = AsteroidField()
 
+    shots = pygame.sprite.Group()
+    Shot.containers = shots, updatable, drawable
+
+
     #player.containers = (updatable, drawable) # teraz juz to nie potrzebne, ale nawet jakby bylo chyba lepiej uzywac bez nawiasu bo inaczej nie dziala bez "upacking" czyli gwiazdki w odniesieniu
     #updatable.add(player)
     #drawable.add(player)
@@ -40,10 +45,22 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
+        
         screen.fill(color="black")
         updatable.update(dt)
+        
+        for asteroid in asteroids:
+            if asteroid.collision(player):
+                print("Game over!")
+                sys.exit()
+            for shot in shots:
+                if shot.collision(asteroid):
+                    asteroid.split()
+                    shot.kill()
+        
         for d in drawable:
             d.draw(screen)
+        
         pygame.display.flip()
         dt = clock.tick(60)/1000
 
