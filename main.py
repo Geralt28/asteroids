@@ -2,10 +2,10 @@
 # the open-source pygame library
 # throughout this file
 import pygame
-
 from constants import *
-#from circleshape import *
 from player import *
+from asteroid import *
+from asteroidfield import *
 
 
 def main():
@@ -16,12 +16,26 @@ def main():
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
     dt = 0
-    player = Player(SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
+
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
-    player.containers = (updatable, drawable)
-    updatable.add(player)
-    drawable.add(player)
+    asteroids = pygame.sprite.Group()
+    
+    Player.containers = updatable, drawable 
+    Asteroid.containers = asteroids, updatable, drawable
+    
+    asteroid_field = pygame.sprite.Group()  # grupa musi pojawiac sie po przypisaniu containers przez Asteroids, bo korzysta z asteroids w swoim kodzie
+    AsteroidField.containers = updatable 
+
+
+    player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+    a_fields = AsteroidField()
+
+    #player.containers = (updatable, drawable) # teraz juz to nie potrzebne, ale nawet jakby bylo chyba lepiej uzywac bez nawiasu bo inaczej nie dziala bez "upacking" czyli gwiazdki w odniesieniu
+    #updatable.add(player)
+    #drawable.add(player)
+    #updatable.add(AsteroidField)
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -33,7 +47,7 @@ def main():
         pygame.display.flip()
         dt = clock.tick(60)/1000
 
-     
+
 
 if __name__ == "__main__":
     main()
